@@ -9,12 +9,13 @@ from scipy.linalg import expm
 #     produce plot
 #     display attributes (drift matrix, expected value etc)
 
-def get_residual_cov_matrix(G, A, delta_t): # formula from Voelkle et. al 2012
+def get_residual_cov_matrix(G, A, delta_t):  # formula from Voelkle et. al 2012
     if np.not_equal(np.tril(G), G).any():
         print("Diffusion matrix not lower triangular")
         return
     Q = np.matmul(G, G.transpose())
-    A_hash = np.kron(A, np.identity(A.shape[0])) + np.kron(np.identity(A.shape[0]), A)
+    A_hash = np.kron(A, np.identity(
+        A.shape[0])) + np.kron(np.identity(A.shape[0]), A)
     cov_vec = np.matmul(np.matmul(np.linalg.inv(A_hash),
                                   expm(A_hash * delta_t) - np.identity(A_hash.shape[0])),
                         np.reshape(Q, (Q.size,)))
@@ -22,11 +23,12 @@ def get_residual_cov_matrix(G, A, delta_t): # formula from Voelkle et. al 2012
     return cov_mtx
 
 
-def get_within_cov_matrix(A, G): # formula from Shuurman 2023 (preprint)
+def get_within_cov_matrix(A, G):  # formula from Shuurman 2023 (preprint)
     auto_cross_lagged = expm(A)
     error_cov = get_residual_cov_matrix(G, A, 1)
     phi_kron_product = np.kron(auto_cross_lagged, auto_cross_lagged)
-    left_matrix = np.linalg.inv(np.identity(phi_kron_product.shape[0]) - phi_kron_product)
+    left_matrix = np.linalg.inv(np.identity(
+        phi_kron_product.shape[0]) - phi_kron_product)
     right_vector = np.reshape(error_cov, error_cov.size)
     within_cov_vec = np.matmul(left_matrix, right_vector)
     return within_cov_vec
@@ -34,11 +36,13 @@ def get_within_cov_matrix(A, G): # formula from Shuurman 2023 (preprint)
 
 def person_two_vars(dt, auto_cross_lagged, error_cov, total_time=500):
     n_datapoints = int(total_time / dt)
-    person = np.empty((2, n_datapoints))  # a thousand datapoints for two vars per person
+    # a thousand datapoints for two vars per person
+    person = np.empty((2, n_datapoints))
     w_init = np.array([0, 0])
     person[:, 0] = w_init  # set process start
     for i in np.arange(n_datapoints - 1):
-        person[:, i + 1] = np.matmul(auto_cross_lagged, person[:, i]) + rng.multivariate_normal([0, 0], error_cov)
+        person[:, i + 1] = np.matmul(auto_cross_lagged, person[:, i]) + \
+            rng.multivariate_normal([0, 0], error_cov)
     return person
 
 
@@ -55,10 +59,10 @@ rng = np.random.default_rng()
 
 # inter-individual distribution
 inter_cov_matrix = np.array([[1, 0.5], [0.5, 1]])
-ppl = np.zeros((10000,100,2))
+ppl = np.zeros((10000, 100, 2))
 for j in range(10000):
     for i in range(100):
-        ppl[j,i] = rng.multivariate_normal([0, 0], inter_cov_matrix)
+        ppl[j, i] = rng.multivariate_normal([0, 0], inter_cov_matrix)
 # fig, ax = plt.subplots()
 # ax.scatter(ppl[:, 0], ppl[:, 1])
 # plt.show()
@@ -77,13 +81,14 @@ for j in range(10000):
     variances[j] = np.array([np.var(ppl[j, :, 0]), np.var(ppl[j, :, 1])])
 
 fig, ax = plt.subplots()
-ax.hist(variances[:,0])
+ax.hist(variances[:, 0])
 plt.show()
 
 
 # drift and diffusion matrices
 drift = np.array([[-0.5, 0.1], [0, -1]])
-diffusion = np.array([[0.5, 0], [0, 0.5]]) #diffusion should be lower-triangular
+# diffusion should be lower-triangular
+diffusion = np.array([[0.5, 0], [0, 0.5]])
 
 # illustrate the drift
 window = 5
@@ -112,7 +117,8 @@ zeta = get_residual_cov_matrix(diffusion, drift, sampling_int)
 
 
 # PLOT A PERSON
-this_person=person_two_vars(dt=sampling_int, auto_cross_lagged=phi, error_cov=zeta, total_time=10)
+this_person = person_two_vars(
+    dt=sampling_int, auto_cross_lagged=phi, error_cov=zeta, total_time=10)
 fig, ax = plt.subplots()
 ax.plot(this_person[0, :], c="orange")
 ax.plot(this_person[1, :], c="grey")
@@ -142,27 +148,25 @@ with open("two_vars_means_variances/variances.npy", "rb") as f:
 
 
 fig, axs = plt.subplots(nrows=3, ncols=2, sharex=False, layout='constrained')
-axs[0,0].set_title("Means", fontsize='small', loc='left')
-axs[0,0].hist(means[0, 0:500, 0], bins=21)
-axs[1,0].hist(means[1, 0:500, 0], bins=21)
-axs[2,0].hist(means[2, 0:500, 0], bins=21)
-axs[0,1].set_title("Variances", fontsize='small', loc='left')
-axs[0,1].hist(vars[0, 0:500, 0], bins=21)
-axs[1,1].hist(vars[1, 0:500, 0], bins=21)
-axs[2,1].hist(vars[2, 0:500, 0], bins=21)
+axs[0, 0].set_title("Means", fontsize='small', loc='left')
+axs[0, 0].hist(means[0, 0:500, 0], bins=21)
+axs[1, 0].hist(means[1, 0:500, 0], bins=21)
+axs[2, 0].hist(means[2, 0:500, 0], bins=21)
+axs[0, 1].set_title("Variances", fontsize='small', loc='left')
+axs[0, 1].hist(vars[0, 0:500, 0], bins=21)
+axs[1, 1].hist(vars[1, 0:500, 0], bins=21)
+axs[2, 1].hist(vars[2, 0:500, 0], bins=21)
 fig.suptitle('Dependent var', fontsize=14)
 plt.show()
 
 fig, axs = plt.subplots(nrows=3, ncols=2, sharex=False, layout='constrained')
-axs[0,0].set_title("Means", fontsize='small', loc='left')
-axs[0,0].hist(means[0, 0:500, 1], bins=21)
-axs[1,0].hist(means[1, 0:500, 1], bins=21)
-axs[2,0].hist(means[2, 0:500, 1], bins=21)
-axs[0,1].set_title("Variances", fontsize='small', loc='left')
-axs[0,1].hist(vars[0, 0:500, 1], bins=21)
-axs[1,1].hist(vars[1, 0:500, 1], bins=21)
-axs[2,1].hist(vars[2, 0:500, 1], bins=21)
+axs[0, 0].set_title("Means", fontsize='small', loc='left')
+axs[0, 0].hist(means[0, 0:500, 1], bins=21)
+axs[1, 0].hist(means[1, 0:500, 1], bins=21)
+axs[2, 0].hist(means[2, 0:500, 1], bins=21)
+axs[0, 1].set_title("Variances", fontsize='small', loc='left')
+axs[0, 1].hist(vars[0, 0:500, 1], bins=21)
+axs[1, 1].hist(vars[1, 0:500, 1], bins=21)
+axs[2, 1].hist(vars[2, 0:500, 1], bins=21)
 fig.suptitle('Independent var', fontsize=14)
 plt.show()
-
-
