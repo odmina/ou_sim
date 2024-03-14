@@ -4,12 +4,61 @@ from scipy.linalg import expm
 
 
 # TODO: create a class person and add methods:
+#     ADD different means!
 #     init
 #     add disturbance
 #     produce plot
 #     display attributes (drift matrix, expected value etc)
+#     simulation should include measurements over different time intervals!
+#     underlying proces is constant over time
+#     the simulation nas two verisons: where everyone has the same process
+#        and when processes differ
+#     funny observation: underlying process can change, probably it is
+#        what therapy is about :D
+#     let add some hierarhy to the model, to predict means over demography?
+#     think of what to do with diffusion matrices!
+#       should eveyone have the same, or should they vary?
+# WHY NOT DESIGN A SYSTEM WHERE SR FULLY DEPEND ON 4 VARIABLES?
+# When eigenvalues of a 2by2 matrix a`re negative
+# Focus on A matices that have negative real parts of eigenvalues i.e.
+#       the process is stable node /spiral
+#       For simplicity, you can use just negative real parts or
+#           negative real parts of complex numbers
 
-def get_residual_cov_matrix(G, A, delta_t):  # formula from Voelkle et. al 2012
+
+# for a person define
+# init, str
+
+
+# To produce person timeseries data:
+#   specify drift and diffusion (model parameters)
+#   specify time intervals
+#   (do I have to generate interim datapoints and sample or generating sampled
+#   points will suffice?)
+
+
+def get_residual_cov_matrix(G, A, delta_t):
+    """
+    This function generates a residual covariance matrix.
+
+    The formula for residual covariance matrix comes from
+    Voelkle MC, Oud JHL, Davidov E, Schmidt P. An SEM approach to continuous
+    time modeling of panel data: Relating authoritarianism and anomia.
+    Psychological Methods [Internet]. 2012;17(2):176–92.
+    Available from: http://doi.apa.org/getdoi.cfm?doi=10.1037/a0027543
+
+    The function gets G, A and delta_t as arguments.
+    delta_t specivies the time interval
+    A is the drift matrix that specifies the underlying model
+    G is the difussion matrix, that specifies the error (co)variance
+
+    Diffusion matrix needs to be lower triangular, since
+    matrix Q used in the function is of the form Q=GG'
+    and has to be Hermitian positive definite matrix.
+
+    In cross laged model errors are not correlated over time.
+    """
+
     if np.not_equal(np.tril(G), G).any():
         print("Diffusion matrix not lower triangular")
         return
@@ -23,7 +72,7 @@ def get_residual_cov_matrix(G, A, delta_t):  # formula from Voelkle et. al 2012
     return cov_mtx
 
 
-def get_within_cov_matrix(A, G):  # formula from Shuurman 2023 (preprint)
+def get_within_cov_matrix(A, G):  # formula from Shuurman 2023 (preprint) eq 32
     auto_cross_lagged = expm(A)
     error_cov = get_residual_cov_matrix(G, A, 1)
     phi_kron_product = np.kron(auto_cross_lagged, auto_cross_lagged)
