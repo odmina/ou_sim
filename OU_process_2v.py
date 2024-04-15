@@ -135,6 +135,7 @@ class OU_process_2v(object):
             distribution with mean mu and covariance matrix Gamma.
         """
 
+        mu = np.array(mu)
         assert mu.shape == (2,), "mu is not (2,) array"
 
         rng = np.random.default_rng()
