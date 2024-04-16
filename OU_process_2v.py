@@ -153,7 +153,7 @@ class OU_process_2v(object):
 
         # simulate data
         for i in np.arange(n_datapoints - 1):
-            this_mu = mu + cond_B*(X[:, i] - mu)
+            this_mu = mu + np.matmul(cond_B, (X[:, i] - mu))
             X[:, i + 1] = rng.multivariate_normal(this_mu, condPDF_cov)
 
         return X
