@@ -6,7 +6,7 @@ from sklearn.metrics import RocCurveDisplay, auc, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 from matplotlib import pyplot as plt
-
+import json
 
 ####################################################################################################
 # 1: Accuracy of cross sectional prediction is driven by stationary covariance
@@ -86,7 +86,7 @@ for i, cov in enumerate(stat_covs):
                                                                           stratify=y)
             except ValueError as e:
                 print(e)
-                data_dict[str(cov)][str(N)][str(run)] = e
+                data_dict[str(cov)][str(N)][str(run)] = str(e)
                 continue
 
             # run classifier for this run
@@ -118,11 +118,11 @@ for i, cov in enumerate(stat_covs):
 
             # save run details
             data_dict[str(cov)][str(N)][str(run)] = {
-                "AUC": roc.roc_auc,
-                "False positive rates": roc.fpr,
-                "True positive rates": roc.tpr,
-                "Cases in training set": np.sum(y_train),
-                "Cases in test set": np.sum(y_holdout)
+                "AUC": float(roc.roc_auc),
+                "False positive rates": list(roc.fpr),
+                "True positive rates": list(roc.tpr),
+                "Cases in training set": int(np.sum(y_train)),
+                "Cases in test set": int(np.sum(y_holdout))
             }
 
         # average tprs over all runs with a given N and cov
@@ -165,3 +165,6 @@ for i, cov in enumerate(stat_covs):
         ax[i, j].legend(loc="lower right")
 
 plt.savefig("_results/fig-01-01_N_cov_full_sim.png")
+
+with open("_results/data-01-01_N_cov_full_sim.json", "w") as fp:
+    fp.write(json.dumps(data_dict, indent=4, separators=(',', ': ')))
