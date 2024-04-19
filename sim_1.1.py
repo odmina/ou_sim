@@ -1,5 +1,5 @@
 import numpy as np
-from OU_process_2v import OU_process_2v
+from functions.OU_process_2v import OU_process_2v
 from person import person
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import RocCurveDisplay, auc, roc_curve
