@@ -1,3 +1,6 @@
+# my ignores
+sim_testing.py
+
 # Default ignored files
 /shelf/
 /workspace.xml
