@@ -11,6 +11,9 @@ sim_testing.py
 /dataSources.local.xml# Created by https://www.toptal.com/developers/gitignore/api/macos,sublimetext,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,sublimetext,python
 
+# ignore .idea
+.idea/
+
 ### macOS ###
 # General
 .DS_Store
