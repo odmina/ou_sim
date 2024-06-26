@@ -2,12 +2,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.linalg import expm
 
-# TODO: create a class person and add methods:
-#     init
-#     add disturbance
-#     produce plot
-#     display attributes (drift matrix, expected value etc)
-
 # set seed
 rng = np.random.default_rng()
 drift = -1.1

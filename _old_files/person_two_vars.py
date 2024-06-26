@@ -2,22 +2,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.linalg import expm
 
-
-# TODO: create a class person and add methods:
-#     ADD different means!
-#     init
-#     add disturbance
-#     produce plot
-#     display attributes (drift matrix, expected value etc)
-#     simulation should include measurements over different time intervals!
-#     underlying proces is constant over time
-#     the simulation nas two verisons: where everyone has the same process
-#        and when processes differ
-#     funny observation: underlying process can change, probably it is
-#        what therapy is about :D
-#     let add some hierarhy to the model, to predict means over demography?
-#     think of what to do with diffusion matrices!
-#       should eveyone have the same, or should they vary?
 # WHY NOT DESIGN A SYSTEM WHERE SR FULLY DEPEND ON 4 VARIABLES?
 # When eigenvalues of a 2by2 matrix a`re negative
 # Focus on A matices that have negative real parts of eigenvalues i.e.
