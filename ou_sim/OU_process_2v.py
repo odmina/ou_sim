@@ -12,7 +12,7 @@ class OU_process_2v(object):
 
     `B` - centralizing (drift) matrix `B` links variables in
         the process, it is asserted to be a real matrix with
-        with positive eigenvalues.
+        positive eigenvalues.
     `Gamma` - stationary covariance matrix of the OU process;
 
     During data simulation parameter `mu` may be provided.
@@ -20,7 +20,7 @@ class OU_process_2v(object):
 
     The simulation uses discrete timesteps of equal length d
         and at each timestep samples X(t) from a conditional
-        distibution of X(t) given X(t-d). The distrubution is
+        distribution of X(t) given X(t-d). The distribution is
         normal with parameters calculated using eq (9) from
         Oravecz et al. 2011.
 
@@ -28,7 +28,7 @@ class OU_process_2v(object):
         with 1/'d' samples per unit.
     The function uses a conditional distribution of X(t).
 
-    Cholesky decomposition of instantaneus covariance
+    Cholesky decomposition of instantaneous covariance
         matrix appears in the stochastic term of the equation of X(t).
         For the simulation, the conditional distribution of X(t)
         given X(t-d) is reparametrized so that it depends on B and Gamma.
@@ -37,7 +37,8 @@ class OU_process_2v(object):
         is a Hermitian, positive-definite matrix.
 
         Since for the simulation only real valued matrices are used,
-        Sigma has to be symetric (otherwise it could be Hermitian).
+        Sigma has to be symmetric (for complex matrices it will have to be
+        Hermitian).
 
         If Gamma is provided, Sigma is calculated to check whether
         it is positive definite (so that we get proper covariance matrices).
@@ -62,28 +63,26 @@ class OU_process_2v(object):
         # if Gamma is provided set and check it and set Sigma
         # Gamma is assumed to be 2x2, real, symmetric and positive semi-definite
         # Sigma = B*Gamma + Gamma*B.T should be positive-definite
-        # (symetric with positive eigenvalues)
+        # (symmetric with positive eigenvalues)
         if Gamma is not None and Sigma is None:
             self.Gamma = np.array(Gamma)
             assert np.all(np.isreal(self.Gamma)), "Gamma is not a real matrix"
             assert self.Gamma.shape == (2, 2), "Gamma is not 2x2 matrix"
-            assert np.all(self.Gamma == self.Gamma.T), "Gamma not symetric"
-            assert np.all(np.linalg.eigvals(self.Gamma) >=
-                          0), "Gamma has negative eigenvalues"
+            assert np.all(self.Gamma == self.Gamma.T), "Gamma not symmetric"
+            assert np.all(np.linalg.eigvals(self.Gamma) >= 0), "Gamma has negative eigenvalues"
             # set Sigma
             self.Sigma = np.matmul(self.B, self.Gamma) + \
                          np.matmul(self.Gamma, self.B.T)
             assert np.all(self.Sigma == self.Sigma.T) and \
-                   np.all(np.linalg.eigvals(self.Sigma) > 0), \
-                "Sigma not possitive-definite"
+                   np.all(np.linalg.eigvals(self.Sigma) > 0), "Sigma not positive-definite"
 
         # if Sigma is provided, check it and set Gamma
-        # Sigma is assumed to be 2x2, symetric and positive semidefinite
+        # Sigma is assumed to be 2x2, symmetric and positive semi-definite
         # Sigma could be Hermitian, but for now simulation uses only real values
         if Sigma is not None and Gamma is None:
             self.Sigma = np.array(Sigma)
             assert self.Sigma.shape == (2, 2), "Sigma is not 2x2 matrix"
-            assert np.all(self.Sigma == self.Sigma.T), "Sigma not symetric"
+            assert np.all(self.Sigma == self.Sigma.T), "Sigma not symmetric"
             assert np.all(np.linalg.eigvals(self.Sigma) > 0), "Sigma has negative eigenvalues"
             # set Gamma
             # equation for Gamma is eq. 4.4.53 from
@@ -96,9 +95,8 @@ class OU_process_2v(object):
                          (2 * det_B * tr_B)
             assert np.all(np.isreal(self.Gamma)), "Gamma is not a real matrix"
             assert self.Gamma.shape == (2, 2), "Gamma is not 2x2 matrix"
-            assert np.all(self.Gamma == self.Gamma.T), "Gamma not symetric"
-            assert np.all(np.linalg.eigvals(self.Gamma) >=
-                          0), "Gamma has negative eigenvalues"
+            assert np.all(self.Gamma == self.Gamma.T), "Gamma not symmetric"
+            assert np.all(np.linalg.eigvals(self.Gamma) >= 0), "Gamma has negative eigenvalues"
 
     def __str__(self):
         return """Two variable Ornstein–Uhlenbeck process;
@@ -133,7 +131,7 @@ class OU_process_2v(object):
 
         The covariance is determined by the stochastic term of the
         integral equation X(t) describing the process.
-        Cholesky decomposition of instantaneus covariance
+        Cholesky decomposition of instantaneous covariance
         matrix appears in this equation. The conditional distribution
         of X(t) given X(t-d) is reparametrized so that it depends
         on B and Gamma.See for example oravecz2011hierarchical eq (5).
@@ -145,16 +143,16 @@ class OU_process_2v(object):
         )
         return cov
 
-    def sim_data(self, d=0.1, total_time=10, mu=(0, 0), mu_fun='linear', **kwargs):
+    def sim_data(self, d=0.1, total_time=10, mu=(0, 0)):
         """
-        This function simulates a two vairable Ornstein–Uhlenbeck process.
+        This function simulates a two variable Ornstein–Uhlenbeck process.
 
         Let vector X(t) be a vector of two variables at time t.
         Covariance matrix of the OU process is `Gamma` (and is stationary).
         Mean of the process `mu` is by default 0, but can be changed.
         The simulation uses discrete timesteps of equal length d
         and at each timestep samples X(t) from a conditional
-        distibution of X(t) given X(t-d). The distrubution is
+        distribution of X(t) given X(t-d). The distribution is
         normal with parameters calculated using eq (9) from
         Oravecz et al. 2011.
         Variables in X are linked by centralizing (drift) matrix `B`
