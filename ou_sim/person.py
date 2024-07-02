@@ -136,7 +136,7 @@ class person(object):
             'B (drift)': ou_process.get_B(),
             'Discrete B': ou_process.get_sim_discreteB(dt),
             'Gamma (stationary cov)': ou_process.get_Gamma(),
-            'Sigma (difussion)': ou_process.get_Sigma(),
+            'Sigma (diffusion)': ou_process.get_Sigma(),
             'Simulation cond. cov': ou_process.get_sim_condPDF_covariance(dt),
             'Delta t': dt,
             'Total time': time

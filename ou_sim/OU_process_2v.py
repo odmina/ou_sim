@@ -32,9 +32,9 @@ class OU_process_2v(object):
         matrix appears in the stochastic term of the equation of X(t).
         For the simulation, the conditional distribution of X(t)
         given X(t-d) is reparametrized so that it depends on B and Gamma.
-        Thus the following condition has to be satisfied:
+        Thus, the following condition has to be satisfied:
         Sigma = B*Gamma + Gamma*B.T
-        is a Hermitian, positive-definite marix.
+        is a Hermitian, positive-definite matrix.
 
         Since for the simulation only real valued matrices are used,
         Sigma has to be symetric (otherwise it could be Hermitian).
@@ -72,9 +72,9 @@ class OU_process_2v(object):
                           0), "Gamma has negative eigenvalues"
             # set Sigma
             self.Sigma = np.matmul(self.B, self.Gamma) + \
-                np.matmul(self.Gamma, self.B.T)
+                         np.matmul(self.Gamma, self.B.T)
             assert np.all(self.Sigma == self.Sigma.T) and \
-                np.all(np.linalg.eigvals(self.Sigma) > 0), \
+                   np.all(np.linalg.eigvals(self.Sigma) > 0), \
                 "Sigma not possitive-definite"
 
         # if Sigma is provided, check it and set Gamma
@@ -90,10 +90,10 @@ class OU_process_2v(object):
             # https://archive.org/details/handbookofstocha0000gard/page/110/mode/2up
             det_B = np.linalg.det(self.B)
             tr_B = np.trace(self.B)
-            B_no_trace = self.B - tr_B*np.identity(2)
-            self.Gamma = (det_B*self.Sigma + np.matmul(np.matmul(B_no_trace, self.Sigma),
-                                                       B_no_trace.T)) / \
-                (2 * det_B * tr_B)
+            B_no_trace = self.B - tr_B * np.identity(2)
+            self.Gamma = (det_B * self.Sigma + np.matmul(np.matmul(B_no_trace, self.Sigma),
+                                                         B_no_trace.T)) / \
+                         (2 * det_B * tr_B)
             assert np.all(np.isreal(self.Gamma)), "Gamma is not a real matrix"
             assert self.Gamma.shape == (2, 2), "Gamma is not 2x2 matrix"
             assert np.all(self.Gamma == self.Gamma.T), "Gamma not symetric"
@@ -123,7 +123,7 @@ class OU_process_2v(object):
 
         It uses timestep `d`, with default 0.1.
         """
-        return expm(-self.B*d)
+        return expm(-self.B * d)
 
     def get_sim_condPDF_covariance(self, d=0.1):
         """
@@ -140,12 +140,12 @@ class OU_process_2v(object):
         """
 
         cov = self.Gamma - np.matmul(
-            np.matmul(expm(-self.B*d), self.Gamma),
-            expm(-self.B.T*d)
+            np.matmul(expm(-self.B * d), self.Gamma),
+            expm(-self.B.T * d)
         )
         return cov
 
-    def sim_data(self,  mu=[0, 0], d=0.1, total_time=10):
+    def sim_data(self, d=0.1, total_time=10, mu=(0, 0), mu_fun='linear', **kwargs):
         """
         This function simulates a two vairable Ornstein–Uhlenbeck process.
 
@@ -188,3 +188,10 @@ class OU_process_2v(object):
             X[:, i + 1] = rng.multivariate_normal(this_mu, condPDF_cov)
 
         return X
+
+# # helper function to introduce mean trends
+# def sine(mean, cycles, amplitude, offset, total_time, dt):
+#     n_datapoints = int(total_time/dt)
+#     time = np.linspace(0, 2*np.pi, n_datapoints) + (2*np.pi/cycles)*offset
+#     mus = mean + amplitude*np.sin(time*cycles)
+#     return mus

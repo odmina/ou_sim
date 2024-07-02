@@ -1,6 +1,6 @@
 import numpy as np
-from functions.get_variances_from_icc import get_variances_from_icc
-from functions.OU_process_2v import OU_process_2v
+from ou_sim.get_variances_from_icc import get_variances_from_icc
+from ou_sim.OU_process_2v import OU_process_2v
 from person import person
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import RocCurveDisplay, auc, roc_curve

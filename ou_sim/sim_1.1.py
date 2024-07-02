@@ -1,5 +1,5 @@
 import numpy as np
-from functions.OU_process_2v import OU_process_2v
+from ou_sim.OU_process_2v import OU_process_2v
 from person import person
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import RocCurveDisplay, auc, roc_curve
@@ -166,5 +166,5 @@ for i, cov in enumerate(stat_covs):
 
 plt.savefig("_results/fig-01-01_N_cov_full_sim.png")
 
-with open("_results/data-01-01_N_cov_full_sim.json", "w") as fp:
+with open("../_results/data-01-01_N_cov_full_sim.json", "w") as fp:
     fp.write(json.dumps(data_dict, indent=4, separators=(',', ': ')))

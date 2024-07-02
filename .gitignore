@@ -1,5 +1,5 @@
 # my ignores
-sim_testing.py
+ou_sim/sim_testing.py
 
 # Default ignored files
 /shelf/
