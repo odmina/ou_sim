@@ -1,4 +1,4 @@
-from OU_process_2v import OU_process_2v
+from ou_sim.OU_process_2v import OU_process_2v
 
 
 class person(object):
