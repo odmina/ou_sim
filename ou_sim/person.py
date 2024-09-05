@@ -133,10 +133,10 @@ class person(object):
 
         extracted_params = {
             'mu': mu,
-            'B (drift)': ou_process.get_B(),
-            'Discrete B': ou_process.get_sim_discreteB(dt),
-            'Gamma (stationary cov)': ou_process.get_Gamma(),
-            'Sigma (diffusion)': ou_process.get_Sigma(),
+            'A (drift)': ou_process.get_A(),
+            'Discrete A': ou_process.get_sim_discreteA(dt),
+            'sigma (stationary cov)': ou_process.get_sigma(),
+            'BB_T (diffusion)': ou_process.get_BB_T(),
             'Simulation cond. cov': ou_process.get_sim_condPDF_covariance(dt),
             'Delta t': dt,
             'Total time': time
