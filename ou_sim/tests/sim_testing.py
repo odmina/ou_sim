@@ -67,25 +67,25 @@ def example_plot(which_person, figure_name):
     ax1.plot(timevec, person_data[1, :], c="grey")
     ax1.hlines(0, 0, which_person.get_parameters("ou")["Total time"], colors="lightgrey", linestyles="dashed")
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    text_discrB = 'Discrete B\n' + np.array2string(params["Discrete B"],
+    text_discr_A = 'Discrete A\n' + np.array2string(params["Discrete A"],
                                                    formatter={'float_kind': lambda x: "%.2f" % x})
-    ax1.text(0.6, 1, text_discrB, transform=ax1.transAxes, fontsize=10, fontweight='bold',
+    ax1.text(0.6, 1, text_discr_A, transform=ax1.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='bottom', bbox=props)
     text_condPDF = 'Simulation cond. cov\n' + np.array2string(params["Simulation cond. cov"],
                                                               formatter={'float_kind': lambda x: "%.2f" % x})
     ax1.text(0.75, 1, text_condPDF, transform=ax1.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='bottom', bbox=props)
-    text_Sigma = 'Sigma (diffusion)\n' + np.array2string(params["Sigma (diffusion)"],
+    text_BB_T = 'BB_T (diffusion)\n' + np.array2string(params["BB_T (diffusion)"],
                                                          formatter={'float_kind': lambda x: "%.2f" % x})
-    ax1.text(0.4, 1, text_Sigma, transform=ax1.transAxes, fontsize=10, fontweight='bold',
+    ax1.text(0.4, 1, text_BB_T, transform=ax1.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='bottom', bbox=props)
-    text_B = 'B (drift)\n' + np.array2string(params["B (drift)"],
+    text_A = 'A (drift)\n' + np.array2string(params["A (drift)"],
                                              formatter={'float_kind': lambda x: "%.2f" % x})
-    ax1.text(0, 1, text_B, transform=ax1.transAxes, fontsize=10, fontweight='bold',
+    ax1.text(0, 1, text_A, transform=ax1.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='bottom', bbox=props)
-    text_Gamma = 'Gamma (stat.cov)\n' + np.array2string(params["Gamma (stationary cov)"],
+    text_sigma = 'sigma (stat.cov)\n' + np.array2string(params["sigma (stationary cov)"],
                                                         formatter={'float_kind': lambda x: "%.2f" % x})
-    ax1.text(0.15, 1, text_Gamma, transform=ax1.transAxes, fontsize=10, fontweight='bold',
+    ax1.text(0.15, 1, text_sigma, transform=ax1.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='bottom', bbox=props)
 
     emp_cov_matrix = np.cov(person_data)
@@ -105,7 +105,7 @@ def example_plot(which_person, figure_name):
     ax3.text(0.01, 0.99, variances, transform=ax3.transAxes, fontsize=10, fontweight='bold',
              verticalalignment='top', bbox=props)
 
-    discreteB = params["Discrete B"]
+    discreteA = params["Discrete A"]
     window = params["Total time"]
     dt = params["Delta t"]
 
@@ -115,7 +115,7 @@ def example_plot(which_person, figure_name):
     y[:, 0] = y_init  # set process start
     last = timevec.size
     for i in np.arange(timevec.size - 1):
-        y[:, i + 1] = np.matmul(discreteB, y[:, i])
+        y[:, i + 1] = np.matmul(discreteA, y[:, i])
         if y[0, i+1] < 0.001 and y[1, i+1] < 0.001:
             last = int(i + 1 + np.ceil(1/dt))
             y = y[:, :last]
@@ -131,7 +131,7 @@ def example_plot(which_person, figure_name):
     y[:, 0] = y_init  # set process start
     last = timevec.size
     for i in np.arange(timevec.size - 1):
-        y[:, i + 1] = np.matmul(discreteB, y[:, i])
+        y[:, i + 1] = np.matmul(discreteA, y[:, i])
         if y[0, i+1] < 0.001 and y[1, i+1] < 0.001:
             last = int(i + 1 + np.ceil(1/dt))
             y = y[:, :last]
@@ -146,56 +146,70 @@ def example_plot(which_person, figure_name):
 
 
 
-my_ou_0 = OU_process_2v(B=[[0.1, 0], [0, 0.1]],
-                        Gamma=[[1, 0], [0, 1]])
+my_ou_0 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+                        sigma=[[1, 0.5], [0.5, 1]])
 
-my_ou_1 = OU_process_2v(B=[[0.5, 0], [0, 0.5]],
-                        Gamma=[[1, 0], [0, 1]])
+my_ou_1 = OU_process_2v(A=[[1, -1], [0, 1]],
+                        sigma=[[1, 0.5], [0.5, 1]])
 
-my_ou_2 = OU_process_2v(B=[[1.0, 0], [0, 1.0]],
-                        Gamma=[[1, 0], [0, 1]])
+my_ou_2 = OU_process_2v(A=[[1, -1], [0, 5]],
+                        sigma=[[1, 0.5], [0.5, 1]])
 
-my_ou_3 = OU_process_2v(B=[[2.0, 0], [0, 2.0]],
-                        Gamma=[[1, 0], [0, 1]])
+my_ou_3 = OU_process_2v(A=[[5, -1], [0, 0.2]],
+                        sigma=[[1, 0.5], [0.5, 1]])
+
+my_ou_4 = OU_process_2v(A=[[5, -1], [0, 1]],
+                        sigma=[[1, 0.5], [0.5, 1]])
+
+my_ou_5 = OU_process_2v(A=[[5, -1], [0, 5]],
+                        sigma=[[1, 0.5], [0.5, 1]])
 
 kasia = person({'płeć': "k", 'wiek': "23"})
 tomek = person({'płeć': "m", 'wiek': "23"})
 zosia = person({'płeć': "k", 'wiek': "23"})
 wiesio = person({'płeć': "k", 'wiek': "23"})
+zenek = person()
+ziuta = person()
 
-kasia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_0, mu=[0, 0], dt=0.1, time=1000)
-tomek.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_1, mu=[0, 0], dt=0.1, time=1000)
-zosia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_2, mu=[0, 0], dt=0.1, time=1000)
-wiesio.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_3, mu=[0, 0], dt=0.10, time=1000)
+simulation_time = 10000
+delta_t = 0.1
+kasia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_0, mu=[0, 0], dt=delta_t, time = simulation_time)
+tomek.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_1, mu=[0, 0], dt=delta_t, time = simulation_time)
+zosia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_2, mu=[0, 0], dt=delta_t, time = simulation_time)
+wiesio.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_3, mu=[0, 0], dt=delta_t, time = simulation_time)
+zenek.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_4, mu=[0, 0], dt=delta_t, time = simulation_time)
+ziuta.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_5, mu=[0, 0], dt=delta_t, time = simulation_time)
 
 example_plot(kasia, "kasia")
 example_plot(tomek, "tomek")
 example_plot(zosia, "zosia")
 example_plot(wiesio, "wiesio")
+example_plot(zenek, "zenek")
+example_plot(ziuta, "ziuta")
 
-results = np.zeros((4, 5))
-processes = [my_ou_0, my_ou_1, my_ou_2, my_ou_3]
+# results = np.zeros((4, 5))
+# processes = [my_ou_0, my_ou_1, my_ou_2, my_ou_3]
 
-for j, p in enumerate(processes):
-    #test the process
-    n_runs = 100
-    means = np.zeros((2, n_runs))
-    variances = np.zeros((2, n_runs))
-    covariances = np.zeros(n_runs)
-    process = p
-
-    for i in range(n_runs):
-        some_dude = person()
-        some_dude.simulate_OU_process_2v(set_name="ou", ou_process=process, mu=[0, 0], dt=1, time=10000)
-        dude_data = some_dude.get_data("ou")
-        means[:, i] = np.mean(dude_data, axis=1)
-        variances[:, i] = np.var(dude_data, axis=1)
-        covariances[i] = np.cov(dude_data)[0, 1]
-
-    results[j, 0] = (np.mean(means[0]))
-    results[j, 1] = (np.mean(means[1]))
-    results[j, 2] = (np.mean(variances[0]))
-    results[j, 3] = (np.mean(variances[1]))
-    results[j, 4] = (np.mean(covariances))
+# for j, p in enumerate(processes):
+#     #test the process
+#     n_runs = 1
+#     means = np.zeros((2, n_runs))
+#     variances = np.zeros((2, n_runs))
+#     covariances = np.zeros(n_runs)
+#     process = p
+#
+#     for i in range(n_runs):
+#         some_dude = person()
+#         some_dude.simulate_OU_process_2v(set_name="ou", ou_process=process, mu=[0, 0], dt=delta_t, time = simulation_time)
+#         dude_data = some_dude.get_data("ou")
+#         means[:, i] = np.mean(dude_data, axis=1)
+#         variances[:, i] = np.var(dude_data, axis=1)
+#         covariances[i] = np.cov(dude_data)[0, 1]
+#
+#     results[j, 0] = (np.mean(means[0]))
+#     results[j, 1] = (np.mean(means[1]))
+#     results[j, 2] = (np.mean(variances[0]))
+#     results[j, 3] = (np.mean(variances[1]))
+#     results[j, 4] = (np.mean(covariances))
 
 
