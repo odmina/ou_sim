@@ -139,12 +139,15 @@ class person(object):
             'BB_T (diffusion)': ou_process.get_BB_T(),
             'Simulation cond. cov': ou_process.get_sim_condPDF_covariance(dt),
             'Delta t': dt,
-            'Total time': time
+            'Total time': time,
+            'Process': ou_process
         }
+
         simulated_data = ou_process.sim_data(
             mu=mu,
             d=dt,
             total_time=time)
+
         self.add_observations(set_name=set_name,
                               parameters=extracted_params,
                               added_obs=simulated_data)

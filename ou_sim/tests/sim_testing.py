@@ -55,13 +55,15 @@ def example_plot(which_person, figure_name):
     person_data = which_person.get_data("ou")
     params = which_person.get_parameters("ou")
 
-    fig = plt.figure(figure_name, figsize=(10, 10))
-    gs = plt.GridSpec(3, 2)
+    fig = plt.figure(figure_name, figsize=(10, 12))
+    gs = plt.GridSpec(4, 2)
     ax1 = fig.add_subplot(gs[0, :])
     ax2 = fig.add_subplot(gs[1, 0])
     ax3 = fig.add_subplot(gs[1, 1])
     ax4 = fig.add_subplot(gs[2, 0])
     ax5 = fig.add_subplot(gs[2, 1])
+    ax6 = fig.add_subplot(gs[3, 0])
+    ax7 = fig.add_subplot(gs[3, 1])
 
     ax1.plot(timevec, person_data[0, :], c="orange")
     ax1.plot(timevec, person_data[1, :], c="grey")
@@ -141,28 +143,60 @@ def example_plot(which_person, figure_name):
     ax5.plot(timevec[:last], y[1, :], c="grey")
     ax5.set_title('Drift illustration orange = 1')
 
+    # for ax6
+    x = np.arange(0, params["Total time"], 0.01)
+    y = np.zeros((x.size, 2, 2))
+    last = x.size
+    for index, value in enumerate(x):
+        y[index] = params["Process"].get_stationary_time_cov(d=value)
+        if np.all(y[index] <= 0.005):
+            last = int(index + 1 + np.ceil(1/dt))
+            y = y[:last]
+            break
+
+    ax6.plot(x[:last], y[:last, 0, 0], c="orange", label="autocovariance of var0")
+    ax6.plot(x[:last], y[:last, 1, 1], c="grey", label="autocovariance of var1")
+    ax6.plot(x[:last], y[:last, 0, 1], c="lime", label="crosscovariance: var1 -> var0")
+    ax6.plot(x[:last], y[:last, 1, 0], c="purple", label="crosscovariance: var0 -> var1")
+    ax6.legend(loc='upper right')
+    ax6.set_title('Cross-covariance over time')
+
+    # for ax7 (builds up on ax6!)
+    x = x[:last]
+    y = np.zeros((x.size, 2, 2))
+    last = x.size
+    for index, value in enumerate(x):
+        y[index] = params["Process"].get_stationary_time_correlation(d=value)
+
+    ax7.plot(x[:last], y[:last, 0, 0], c="orange", label="autocorrelation of var0")
+    ax7.plot(x[:last], y[:last, 1, 1], c="grey", label="autocorrelation of var1")
+    ax7.plot(x[:last], y[:last, 0, 1], c="lime", label="crosscorrelation: var1 -> var0")
+    ax7.plot(x[:last], y[:last, 1, 0], c="purple", label="crosscorrelation: var0 -> var1")
+    ax7.legend(loc='upper right')
+    ax7.set_title('Cross-correlation over time')
+
     plt.show()
     fig.savefig("temp/" + figure_name + ".png")
 
 
 
-my_ou_0 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+# my_ou_0 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+#                         sigma=[[1, 0.1], [0.1, 1]])
+
+my_ou_1 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+                        sigma=[[1, 0.2], [0.2, 1]])
+
+my_ou_2 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+                        sigma=[[1, 0.3], [0.3, 1]])
+
+my_ou_3 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+                        sigma=[[1, 0.4], [0.4, 1]])
+
+my_ou_4 = OU_process_2v(A=[[1, -1], [0, 0.2]],
                         sigma=[[1, 0.5], [0.5, 1]])
 
-my_ou_1 = OU_process_2v(A=[[1, -1], [0, 1]],
-                        sigma=[[1, 0.5], [0.5, 1]])
-
-my_ou_2 = OU_process_2v(A=[[1, -1], [0, 5]],
-                        sigma=[[1, 0.5], [0.5, 1]])
-
-my_ou_3 = OU_process_2v(A=[[5, -1], [0, 0.2]],
-                        sigma=[[1, 0.5], [0.5, 1]])
-
-my_ou_4 = OU_process_2v(A=[[5, -1], [0, 1]],
-                        sigma=[[1, 0.5], [0.5, 1]])
-
-my_ou_5 = OU_process_2v(A=[[5, -1], [0, 5]],
-                        sigma=[[1, 0.5], [0.5, 1]])
+my_ou_5 = OU_process_2v(A=[[1, -1], [0, 0.2]],
+                        sigma=[[1, 0.6], [0.6, 1]])
 
 kasia = person({'płeć': "k", 'wiek': "23"})
 tomek = person({'płeć': "m", 'wiek': "23"})
@@ -171,16 +205,16 @@ wiesio = person({'płeć': "k", 'wiek': "23"})
 zenek = person()
 ziuta = person()
 
-simulation_time = 10000
+simulation_time = 60
 delta_t = 0.1
-kasia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_0, mu=[0, 0], dt=delta_t, time = simulation_time)
+# kasia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_0, mu=[0, 0], dt=delta_t, time = simulation_time)
 tomek.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_1, mu=[0, 0], dt=delta_t, time = simulation_time)
 zosia.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_2, mu=[0, 0], dt=delta_t, time = simulation_time)
 wiesio.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_3, mu=[0, 0], dt=delta_t, time = simulation_time)
 zenek.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_4, mu=[0, 0], dt=delta_t, time = simulation_time)
 ziuta.simulate_OU_process_2v(set_name="ou", ou_process=my_ou_5, mu=[0, 0], dt=delta_t, time = simulation_time)
 
-example_plot(kasia, "kasia")
+# example_plot(kasia, "kasia")
 example_plot(tomek, "tomek")
 example_plot(zosia, "zosia")
 example_plot(wiesio, "wiesio")
