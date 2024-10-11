@@ -1,3 +1,23 @@
+import numpy as np
+
+
+def cor_to_cov(cor_matrix, variances):
+    """
+    Function to turn correlation matrix to covriance matrix.
+
+    It will return valid covariance matrix if you provide
+    valid correlation matrix and valid variances.
+    It does not perform checks, so if your input is not valid
+    it will return something, but it may not be a valid
+    covariance matrix.
+    """
+
+    sds = np.sqrt(variances)
+    sds_outer = np.outer(sds, sds)
+    cov_matrix = cor_matrix * sds_outer
+    return cov_matrix
+
+
 def get_variances_from_icc(icc, **kwargs):
     """@markdown
     This function calculates how much variance will produce provided ICC.
@@ -22,3 +42,4 @@ def get_variances_from_icc(icc, **kwargs):
         between = E_within * (icc/(1-icc))
 
     return {"icc": icc, "E_within": E_within, "between": between}
+
