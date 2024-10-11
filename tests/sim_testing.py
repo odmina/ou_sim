@@ -4,7 +4,7 @@ from scipy.linalg import expm
 
 from ou_sim.OU_process_2v import OU_process_2v
 from ou_sim.OU_process_1v import OU_process_1v
-from ou_sim.person import person
+from data_simulation.person import person
 
 """
 Possible predictors:
@@ -79,7 +79,7 @@ for k in Ks:
     ax3.plot(timevec[:last], y, c="blue")
     plt.show()
 
-    n_reps = 1000
+    n_reps = 1
     means = np.zeros(n_reps)
     vars = np.zeros(n_reps)
     d_av = 1
